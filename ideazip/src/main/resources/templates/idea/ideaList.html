@@ -1,0 +1,196 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header">
+    <title>Hello</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<nav th:replace="fragments/top :: top"></nav>
+<br><br><br>
+<div class="container list">
+    <!-- START : 검색 폼  -->
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form name="search" action="ideaList" method="get"
+                  class="form-horizontal">
+                <input type="hidden" name="size" th:value="${page.size}">
+                <input type="hidden" name="page" th:value="${page.number}">
+                <div class="form-group">
+                    <label for="id_searchType" class="col-sm-2 control-label">검색</label>
+                    <div class="col-sm-2">
+                        <select id="id_searchType" name="searchType"
+                                class="form-control input-sm">
+                            <option th:value="T" th:text="제목" th:selected="${search.searchType}=='T'"></option>
+                            <option th:value="W" th:text="작성자" th:selected="${search.searchType}=='W'"></option>
+                            <option th:value="C" th:text="내용" th:selected="${search.searchType}=='C'"></option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <input type="text" name="searchWord"
+                               class="form-control input-sm" th:value="${search.searchWord}" placeholder="검색어">
+                    </div>
+                    <label for="id_searchCategory"
+                           class="col-sm-2 col-sm-offset-2 control-label">분류</label>
+                    <div class="col-sm-2">
+                        <select id="id_searchCategory" name="searchCategory"
+                                class="form-control input-sm">
+                            <option value="">-- 전체 --</option>
+                            <option th:each="category : ${categoryList}" th:value="${category.categoryCd}"
+                                    th:text="${category.categoryName}"
+                                    th:selected="${category.categoryCd==search.searchCategory}"
+                            ></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 col-sm-offset-9 text-right">
+                        <button type="button" id="id_btn_reset"
+                                class="btn btn-sm btn-default">
+                            <i class="fa fa-sync"></i> &nbsp;&nbsp;초기화
+                        </button>
+                    </div>
+                    <div class="col-sm-1 text-right">
+                        <button type="submit" class="btn btn-sm btn-primary ">
+                            <i class="fa fa-search"></i> &nbsp;&nbsp;검 색
+                        </button>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <!-- END : 검색 폼  -->
+
+    <!-- START : 목록건수 및 새글쓰기 버튼  -->
+    <div class="row" style="margin-bottom: 10px;">
+        <div class="col-sm-3 form-inline">
+            글 개수
+            <select id="id_size" name="size"
+                    class="form-control input-sm">
+                <option th:each="num : ${#numbers.sequence(10,30,10)}" th:value="${num}" th:text="${num}"
+                        th:selected="${num==page.size}"
+                ></option>
+            </select>
+        </div>
+    </div>
+    <!-- END : 목록건수 및 새글쓰기 버튼  -->
+
+    <div class="page-header">
+        <h3>
+            아이디어게시판 - <small>글 목록</small>
+        </h3>
+    </div>
+
+
+    <div class="row">
+        <div class="col-sm-2 col-sm-offset-10 text-right"
+             style="margin-bottom: 5px;">
+            <a href="ideaForm" class="btn btn-primary btn-sm"> <span
+                    class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                &nbsp;새글쓰기
+            </a>
+        </div>
+    </div>
+    <table class="table table-striped table-bordered table-hover">
+        <colgroup>
+            <col width="10%"/>
+            <col width="15%"/>
+            <col/>
+            <col width="10%"/>
+            <col width="15%"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>글 번호</th>
+            <th>분류</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>등록일</th>
+            <th>조회수</th>
+            <th>댓글</th>
+            <th>좋아요</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="text-center" th:each="idea : ${ideaList}">
+            <td th:text="${idea.id}"></td>
+            <td th:text="${idea.categoryName}"></td>
+            <td class="text-left"   > <strong>
+                <a th:href="@{ideaView(id=${idea.id},size=${page.size}  , page=${page.number}
+                              , searchType=${search.searchType}, searchWord=${search.searchWord}, searchCategory=${search.searchCategory}      )}"
+                   th:text="${idea.title}"></a></strong></td>
+            <td th:text="${idea.username}"></td>
+            <td th:text="${idea.createdDate}"></td>
+            <td th:text="${idea.viewCount}"></td>
+            <td th:text="${idea.replyCount}"></td>
+            <td th:text="${idea.thumbsUpCount}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <!-- START : 페이지네이션  -->
+    <!--    page.number는 0부터 시작한다. totalPage도 0부터 개수 샌거다.    firstPage, lastPage는 0 ~9   10 ~19로 설정하고 보이는것만 +1 하는게 나머지 계산 편하다.-->
+    <nav class="text-center" th:with="firstPage=${ page.number/10*10} , lastPage=${firstPage+9  > page.totalPages  ?  page.totalPages==0 ? 0 : page.totalPages-1    : firstPage+9   }">
+        <ul class="pagination">
+            <!-- 첫 페이지  -->
+            <li><a th:href="@{ideaList(page=${0})}" th:data-page="0"><span
+                    aria-hidden="true">&laquo;</span></a></li>
+            <li><a th:href="@{ideaList(page=${firstPage ==0 ? 0 : firstPage-1 }) }"
+                   data-page="${firstPage-1}"><span aria-hidden="true">&lt;</span></a></li>
+
+            <!-- 페이지 넘버링  -->
+            <th:block th:each="num : ${#numbers.sequence( firstPage    , lastPage   )}">
+                    <li th:if="${page.number!=num}"><a th:href="@{ideaList(page=${num})}" th:data-page="${num }" th:text="${num+1}"></a></li>
+                 <li class="active" th:if="${page.number==num}"><a href="#" th:text="${num+1}"></a></li>
+            </th:block>
+            <!-- 다음  페이지  -->
+            <li><a th:href="@{ideaList(page=${lastPage==page.totalPages-1 ? page.totalPages-1 : lastPage+1})}" th:data-page="${lastPage==page.totalPages-1 ? page.totalPages-1 : lastPage+1}"><span
+                    aria-hidden="true">&gt;</span></a></li>
+
+            <!--마지막페이지-->
+            <li><a th:href="@{ideaList(page=${page.totalPages-1})}" th:data-page="${page.totalPages-1}"><span
+                    aria-hidden="true">&raquo;</span></a></li>
+        </ul>
+    </nav>
+    <!-- END : 페이지네이션  -->
+</div>
+<!-- container -->
+</body>
+<script>
+        $form=$("form[name='search']");
+		$page=$form.find("input[name='page']");
+
+		//페이지 번호 클릭시 이동. 근데 검색조건과 함께 페이징 되야 함
+		$('ul.pagination li a[data-page]').click(function(e) {
+			e.preventDefault();
+			$page.val($(this).data("page"));
+			$form.submit();
+		}); // ul.pagination li a[data-page]
+		//검색버튼
+		$form.find("button[type=submit]").click(function(e) {
+			e.preventDefault();
+			$page.val(0);
+			$form.submit();
+		});
+		// 목록 갯수 변경
+		$('#id_size').change(function(e) {
+			$page.val(0);
+			$form.find("input[name='size']").val($(this).val());
+			$form.submit();
+		}); // '#id_rowSizePerPage'.change
+
+		// 초기화 버튼 클릭
+		$('#id_btn_reset').click(function() {
+			$page.val(0);
+			$form.find("input[name='searchWord']").val("");
+			$form.find("select[name='searchType'] option:eq(0)").prop("selected", true);
+			$form.find("select[name='searchCategory'] option:eq(0)").prop("selected", true);
+		}); // #id_btn_reset.click
+</script>
+
+</html>
+
+
+
+
+
+

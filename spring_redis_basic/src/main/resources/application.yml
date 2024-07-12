@@ -1,0 +1,16 @@
+server :
+  port : 8080
+spring:
+  redis :
+    host : localhost
+    port : 6379
+  devtools:   # 정적자원 캐시사용안함=> 새로고침시 바로바로,   but 실제서버운영시 캐시 사용해야된다
+    livereload :
+      enabled : true
+    freemarker:
+      cache: false
+    restart:
+      enabled: false
+  thymeleaf:
+    cache: false
+

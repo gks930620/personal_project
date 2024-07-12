@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Hello</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<h1>  인증만 헀다면 올 수 있는 페이지. 밑에는 현재 로그인정보</h1>
+<h2 sec:authentication="principal" ></h2>
+</body>
+</html>

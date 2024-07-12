@@ -1,0 +1,36 @@
+server :
+  port : 8080  #충돌나면 잠깐 바꾸자
+spring:
+  servlet :
+    multipart :
+      max-file-size : 100MB
+      max-request-size : 1024MB
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+#        show_sql: true
+        format_sql: true
+
+  devtools:   # 정적자원 캐시사용안함=> 새로고침시 바로바로,   but 실제서버운영시 캐시 사용해야된다
+    livereload :
+      enabled : true
+    freemarker:
+      cache: false
+    restart:
+      enabled: false
+  thymeleaf:
+    cache: false
+
+
+
+logging.level:
+  org.hibernate.SQL: debug
+
+
+
+
+
+
+

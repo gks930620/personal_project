@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header">
+    <title>Hello</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<style>
+  .ck-editor__editable { height: 600px;  }
+   .ck-content { font-size: 12px; }
+</style>
+<body>
+<nav th:replace="fragments/top :: top"></nav>
+<br><br><br>
+<div class="container">
+    <form class="form-horizontal" action="/idea/ideaModify" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:value="${idea.id}" name="id">
+        <div class="form-group">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2">
+                <select name="categoryCd"
+                        class="form-control input-sm" required="required">
+                    <option value="">-- 전체 --</option>
+                    <option th:each="category : ${categoryList}" th:value="${category.categoryCd}"
+                            th:text="${category.categoryName}"
+                            th:selected="${category.categoryCd==idea.categoryCd}"
+                    ></option>
+                </select>
+            </div>
+            <div class="col-sm-4">
+                <input type="text" required="required" class="form-control" name="title" id="title" placeholder="제목" th:value="${idea.title}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+                <textarea name="content" id="editor" th:text="${idea.content}" required="required"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+        <table class="table table-striped table-bordered">
+            <colgroup>
+                <col width="20%"/>
+                <col/>
+            </colgroup>
+            <tr>
+                <th>첨부파일
+                    <button type="button" id="id_btn_new_file">추가</button>
+                </th>
+
+                <td class="file_area">
+                        <div th:each="attach : ${idea.attaches} ">
+                            <a th:href="@{/attach/download(id=${attach.id})}" target="_blank">
+                                <span class="glyphicon glyphicon-save" aria-hidden="true"></span> [[${attach.attachOriginalName}]]
+                            </a> Size :  [[${attach.attachFileSize}]]
+                            <button class="btn_file_delete" th:data-attach-id="${attach.id}">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            </button>
+                        </div>
+
+                    <div class="form-inline">
+                        <input type="file" name="boFiles" class="form-control">
+                        <button type="button" class="btn_delete btn btn-sm">삭제</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default">글 등록</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script type="text/javascript" src="/ckeditor4_2/ckeditor.js"></script>
+<script>
+$(function () {
+	CKEDITOR.replace('editor', {
+		filebrowserUploadUrl : '/idea/fileUpload'
+		 ,height : 400
+	});
+});
+</script>
+
+<script>
+	// 첨부파일 추가버튼 클릭
+	$('#id_btn_new_file').click(function(){
+	    $('.file_area').append('<div class="form-inline">'
+	      	+ '<input type="file" name="boFiles" class="form-control">'
+	      	+ ' <button type="button" class="btn_delete btn btn-sm">삭제</button>'
+			+ '</div>');
+	}); // #id_btn_new_file.click
+
+
+	// 상위객체를 통해 이벤트 위임
+	$('.file_area').on('click','.btn_delete', function(){
+		$(this).closest('div').remove();
+	});
+
+	// 기존 첨부파일 삭제 클릭
+	$('.btn_file_delete').click(function(){
+		$btn = $(this);
+		$btn.closest('div').html(
+				 '<input type="hidden" name="delAttachNos" value="' + $btn.data("attach-id")  + '" />'
+				);
+	});   //
+</script>
+
+</html>

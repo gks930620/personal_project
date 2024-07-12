@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>Hello</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div sec:authorize="hasRole('ROLE_ADMIN')" >
+    ROLE_ADMIN일 때만 보이는 구역
+    <h1 sec:authentication="principal" ></h1>
+    <h1 sec:authentication="name" ></h1>
+    <h1 sec:authentication="principal.authorities"></h1>
+</div>
+
+<hr>
+<div sec:authorize="isAuthenticated()">
+   인증(로그인)만 했다면 보이는 구역
+    <h1 sec:authentication="principal" ></h1>
+    <h1 sec:authentication="name" ></h1>
+    <h1 sec:authentication="principal.authorities" ></h1>
+</div>
+
+<hr>
+<div sec:authorize="!isAuthenticated()">
+    인증(로그인)안됐을때만 보이는 구역
+</div>
+
+
+
+</body>
+</html>

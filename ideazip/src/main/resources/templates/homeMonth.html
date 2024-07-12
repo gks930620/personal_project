@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<style>
+
+</style>
+<body>
+<h1>월간</h1>
+<div>
+    <table class="table  table-bordered table-hover">
+        <thead>
+        <tr style="background-color:#ffffcc;">
+            <td>번호</td>
+            <td>제목</td>
+            <td>조회수</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr  th:each="idea : ${ideaHomeList}">
+            <td th:text="${idea.id}"></td>
+            <td><a th:href="@{/idea/ideaView(id=${idea.id})}" th:text="${idea.title}"></a></td>
+            <td th:text="${idea.viewCount}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
